@@ -1,17 +1,56 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import "./index.css";
+import MainMenu from "./components/MainMenu"
+import CreateGame from "./components/CreateGame";
+import CreateQuiz from "./components/CreateQuiz";
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+class App extends React.Component {
+    constructor(props) {
+        super(props);
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+        this.state = {
+            showMainMenu: true,
+            showCreateQuiz: false,
+            showCreateGame: false
+        }
+    }
+
+    showComponent(name) {
+        switch (name) {
+            case "menu":
+                this.setState({showMainMenu: true, showCreateQuiz: false, showCreateGame: false});
+                break;
+            case "createQuiz":
+                this.setState({showCreateQuiz: true, showMainMenu: false, showCreateGame: false});
+                break;
+            case "createGame":
+                this.setState({showCreateGame: true, showMainMenu: false, showCreateQuiz: false});
+                break;
+            default:
+                this.setState({showMainMenu: true, showCreateQuiz: false, showCreateGame: false});
+        }
+    }
+
+
+    render() {
+        return (
+            <div>
+                {this.state.showMainMenu &&
+                <MainMenu
+                    showCreateQuiz={() => this.showComponent("createQuiz")}
+                    showCreateGame={() => this.showComponent("createGame")}
+                />}
+                {this.state.showCreateQuiz && <CreateQuiz
+                    showMainMenu={() => this.showComponent("menu")}
+                />}
+                {this.state.showCreateGame && <CreateGame
+                    showMainMenu={() => this.showComponent("menu")}
+                />}
+            </div>
+        );
+    }
+}
+
+ReactDOM.render(<App />, document.getElementById("root"));
+
