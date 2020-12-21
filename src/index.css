@@ -20,7 +20,6 @@ html, body, #root, #root > div {
     height: 100%;
 }
 
-
 .component {
     display: flex;
     flex-direction: column;
@@ -66,4 +65,17 @@ html, body, #root, #root > div {
 .formLabel {
     color: white;
     font-size: 1rem;
+}
+
+.quiz_component {
+    background-color: #00796b;
+    color: white;
+    width: 100%;
+    text-align: center;
+
+    margin-top: 1rem;
+}
+
+.width_100 {
+    width: 100%;
 }

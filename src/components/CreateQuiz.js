@@ -1,5 +1,7 @@
 import React from "react";
 
+const API_URL = "http://localhost:9000/api/quiz";
+
 function TitleComponent(props) {
     return (
         <div>
@@ -20,13 +22,13 @@ class QuestionAnswer extends React.Component {
     }
 
     modifyQuestion = (event) => {
+        this.props.modifyQuestion(event.target.value, this.state.answer);
         this.setState({question: event.target.value});
-        this.props.modifyQuestion(this.state.question, this.state.answer);
     }
 
     modifyAnswer = (event) => {
+        this.props.modifyQuestion(event.target.value, this.state.answer);
         this.setState({answer: event.target.value});
-        this.props.modifyQuestion(this.state.question, this.state.answer);
     }
 
     render() {
@@ -93,6 +95,9 @@ export default class CreateQuiz extends React.Component {
         return this.state.questions[index];
     }
 
+    getQuestions = () => this.state.questions;
+    getTitle = () => this.state.title;
+
     render() {
         return (
             <div>
@@ -106,8 +111,8 @@ export default class CreateQuiz extends React.Component {
 
                 {!this.state.showEdit && <Preview
                     showEdit={this.toggleState}
-                    title={this.state.title}
-                    questions={this.state.questions}
+                    getTitle={this.getTitle}
+                    getQuestions={this.getQuestions}
                     showMainMenu={this.props.showMainMenu}
                 /> }
             </div>
@@ -149,35 +154,43 @@ class Preview extends React.Component {
         super(props);
 
         this.state = {
-            index: 0
+            index: 0,
+            title: this.props.getTitle(),
+            questions: this.props.getQuestions()
         }
     }
 
     getQuestion = () => {
-        console.log(this.props.questions[this.state.index]);
-        return this.props.questions[this.state.index].question;
+        return this.state.questions[this.state.index].question;
     }
-    getAnswer = () => this.props.questions[this.state.index].answer;
-    hasNext = () => this.state.index < this.props.questions.length - 1;
+    getAnswer = () => this.state.questions[this.state.index].answer;
+    hasNext = () => this.state.index < this.state.questions.length - 1;
 
     nextQuestion = () => {
         this.setState({index: this.state.index + 1});
     }
 
     submit = () => {
-        // TODO: Submit the quiz to an external server
+        const toPost = {"quiz_name": this.state.title, "questions": this.state.questions};
+        window.fetch(API_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(toPost)
+        }).then(_ => this.props.showMainMenu()); // TODO: Create an error screen
     }
 
     render() {
         return (
             <div className="component">
-                <h1 id="banner">{this.props.title}</h1>
+                <h1 id="banner">{this.state.title}</h1>
                 <PreviewQuestionWidget
                     question={this.getQuestion()}
                     answer={this.getAnswer()}
                     hasNext={this.hasNext}
                     nextQuestion={this.nextQuestion}
-                    showMainMenu={this.props.showMainMenu}
+                    showMainMenu={this.submit}
                 />
                 <input type="button" value="Edit" onClick={this.props.showEdit}/>
             </div>

@@ -19,7 +19,7 @@ const expectedQuestion = {
     "answer": "some answer"
 }
 
-app.use(cors);
+app.use(cors());
 
 app.post("/api/quiz", function (req, res) {
     const postRequest = req.body;
