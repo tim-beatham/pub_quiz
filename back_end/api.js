@@ -5,6 +5,8 @@ const bodyParser = require("body-parser");
 
 const {postQuiz, fetchQuizzes} = require("./db_queries");
 
+const cors = require("cors");
+
 app.use(bodyParser.json());
 
 const responseExpected = {
@@ -17,6 +19,7 @@ const expectedQuestion = {
     "answer": "some answer"
 }
 
+app.use(cors);
 
 app.post("/api/quiz", function (req, res) {
     const postRequest = req.body;
