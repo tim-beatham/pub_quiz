@@ -4,6 +4,7 @@ import "./index.css";
 import MainMenu from "./components/MainMenu"
 import CreateGame from "./components/CreateGame";
 import CreateQuiz from "./components/CreateQuiz";
+import GameLobby from "./components/GameLobby";
 
 class App extends React.Component {
     constructor(props) {
@@ -12,23 +13,28 @@ class App extends React.Component {
         this.state = {
             showMainMenu: true,
             showCreateQuiz: false,
-            showCreateGame: false
+            showCreateGame: false,
+            showGameLobby: false,
+            quiz: {}
         }
     }
 
     showComponent(name) {
         switch (name) {
             case "menu":
-                this.setState({showMainMenu: true, showCreateQuiz: false, showCreateGame: false});
+                this.setState({showMainMenu: true, showCreateQuiz: false, showCreateGame: false, showGameLobby: false});
                 break;
             case "createQuiz":
-                this.setState({showCreateQuiz: true, showMainMenu: false, showCreateGame: false});
+                this.setState({showCreateQuiz: true, showMainMenu: false, showCreateGame: false, showGameLobby: false});
                 break;
             case "createGame":
-                this.setState({showCreateGame: true, showMainMenu: false, showCreateQuiz: false});
+                this.setState({showCreateGame: true, showMainMenu: false, showCreateQuiz: false, showGameLobby: false});
+                break;
+            case "showLobby":
+                this.setState({showGameLobby: true, showCreateGame: false, showMainMenu: false, showCreateQuiz: false});
                 break;
             default:
-                this.setState({showMainMenu: true, showCreateQuiz: false, showCreateGame: false});
+                this.setState({showMainMenu: true, showCreateQuiz: false, showCreateGame: false, showGameLobby: false});
         }
     }
 
@@ -45,6 +51,11 @@ class App extends React.Component {
                 />}
                 {this.state.showCreateGame && <CreateGame
                     showMainMenu={() => this.showComponent("menu")}
+                    showLobby={() => this.showComponent("showLobby")}
+                    setQuiz={(quiz) => this.setState({quiz})}
+                />}
+                {this.state.showGameLobby && <GameLobby
+                    quiz={this.state.quiz}
                 />}
             </div>
         );

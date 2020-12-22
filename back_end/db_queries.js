@@ -24,8 +24,21 @@ async function fetchQuizzes() {
     client = await MongoClient.connect(url);
     db = client.db("PubQuiz");
 
-    let result = await db.collection("quizzes").find({}, {projection: {"_id": 0}});
+    let result = await db.collection("quizzes").find({});
     result = await result.toArray();
+
+    client.close();
+
+    return result;
+}
+
+async function fetchQuiz(id) {
+    let client, db;
+
+    client = await MongoClient.connect(url);
+    db = client.db("PubQuiz");
+
+    let result = await db.collection("quizzes").findOne({"_id": new mongo.ObjectID(id)});
 
     client.close();
 
@@ -34,3 +47,4 @@ async function fetchQuizzes() {
 
 exports.postQuiz = postQuiz;
 exports.fetchQuizzes = fetchQuizzes;
+exports.fetchQuiz = fetchQuiz;

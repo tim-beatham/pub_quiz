@@ -1,13 +1,22 @@
 const express = require("express");
 const app = express();
+const http = require("http").createServer(app);
+const io = require("socket.io")(http, {
+    cors: {
+        origin: "*"
+    }
+});
+
+const {v4: uuidv4} = require("uuid");
 
 const bodyParser = require("body-parser");
 
-const {postQuiz, fetchQuizzes} = require("./db_queries");
+const {postQuiz, fetchQuizzes, fetchQuiz} = require("./db_queries");
 
 const cors = require("cors");
 
 app.use(bodyParser.json());
+
 
 const responseExpected = {
     "quiz_name": "An example of a quiz",
@@ -52,9 +61,38 @@ app.get("/api/quizzes", function (req, res) {
         });
 });
 
+app.get("/api/quiz", function (req, res) {
+    let request = req.query;
 
-console.log("Server Started");
-app.listen(9000);
+    console.log(request.id);
+
+    fetchQuiz(request.id)
+        .then(result => {
+            res.status(200).json(result);
+        }).catch(err => {
+            res.status(500).send(JSON.stringify(err));
+        });
+});
+
+
+let games = [];
+
+io.on("connection", (socket) => {
+    console.log("a user connected");
+
+    socket.on("createLobby", () => {
+        let id = uuidv4();
+        games.push(id);
+        socket.join(id);
+
+        socket.emit("gameCreated", uuidv4());
+    });
+});
+
+const PORT = 9000;
+http.listen(9000, () => {
+    console.log(`Listening on port ${PORT}`);
+})
 
 function checkObjects(obj1, obj2) {
     const attributeNames1 = Object.getOwnPropertyNames(obj1);
