@@ -77,22 +77,8 @@ export default class CreateQuiz extends React.Component {
         this.setState({questions: [...this.state.questions.slice(0, index), {question, answer}, ...this.state.questions.slice(index + 1)]});
     }
 
-    addQuestionComponent = () => {
-        let numQuestion = this.state.questionComponents.length;
-
+    addQuestionAnswer = () => {
         this.setState({questions: [...this.state.questions, {question: "", answer: ""}]});
-        this.setState(
-            {questionComponents: [...this.state.questionComponents,
-                    <QuestionAnswer
-                        key={numQuestion}
-                        modifyQuestion={(question, answer) => this.modifyQuestion(numQuestion, question, answer)}
-                        question={() => this.getQuestion(numQuestion)}
-                    />]
-            });
-    }
-
-    getQuestion = (index) => {
-        return this.state.questions[index];
     }
 
     getQuestions = () => this.state.questions;
@@ -103,10 +89,12 @@ export default class CreateQuiz extends React.Component {
             <div>
                 {this.state.showEdit && <EditQuiz
                     questionComponents={this.state.questionComponents}
-                    addQuestionComponent={this.addQuestionComponent}
                     title={this.state.title}
                     setTitle={this.setTitle}
+                    getQuestions={this.getQuestions}
                     showPreview={this.toggleState}
+                    modifyQuestion={this.modifyQuestion}
+                    addQuestionAnswer={this.addQuestionAnswer}
                 /> }
 
                 {!this.state.showEdit && <Preview
@@ -121,16 +109,49 @@ export default class CreateQuiz extends React.Component {
 }
 
 class EditQuiz extends React.Component {
+
+    constructor(props) {
+        super(props);
+
+        let questionComponents = this.props.getQuestions().map((question, numQuestion) => {
+            return <QuestionAnswer
+                key={numQuestion}
+                modifyQuestion={(question, answer) => this.props.modifyQuestion(numQuestion, question, answer)}
+                question={() => this.props.getQuestions()[numQuestion]}
+                />
+        });
+
+        this.state = {
+            questionComponents: questionComponents
+        }
+    }
+
+    addQuestionComponent = () => {
+        let numQuestion = this.state.questionComponents.length;
+
+        this.props.addQuestionAnswer();
+
+        this.setState(
+            {questionComponents: [...this.state.questionComponents,
+                    <QuestionAnswer
+                        key={numQuestion}
+                        modifyQuestion={(question, answer) => this.props.modifyQuestion(numQuestion, question, answer)}
+                        question={() => this.props.getQuestions()[numQuestion]}
+                    />]
+            });
+    }
+
+
     render() {
         return (
             <div className="component">
                 <h1 id="banner">Create Quiz</h1>
                 <TitleComponent title={this.props.title} setTitle={this.props.setTitle}/>
                 <div id="questions">
-                    {this.props.questionComponents}
+                    {this.state.questionComponents}
                 </div>
                 <EditWidget
-                    addQuestion={this.props.addQuestionComponent}
+                    addQuestion={this.addQuestionComponent}
                     showPreview={this.props.showPreview}
                 />
             </div>

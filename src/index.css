@@ -72,10 +72,20 @@ html, body, #root, #root > div {
     color: white;
     width: 100%;
     text-align: center;
-
     margin-top: 1rem;
 }
 
 .width_100 {
     width: 100%;
+}
+
+.rotate_head {
+    background-color: rebeccapurple;
+    width: 120px;
+    height: 120px;
+}
+
+@keyframes spin {
+    0% {transform: rotate(0deg);}
+    100% {transform: rotate(360deg);}
 }
