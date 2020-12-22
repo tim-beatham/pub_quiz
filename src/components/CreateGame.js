@@ -3,17 +3,8 @@ import React from 'react';
 const FETCH_ENDPOINT = "http://localhost:9000/api/quizzes";
 
 function QuizComponent(props) {
-    let questions = props.questions.map(question => {
-        return <div><p>{question.question}</p><p>{question.answer}</p></div>;
-    });
-
     return (
-        <div className="quiz_component">
-            <h2>{props.name}</h2>
-            <div>
-                {questions}
-            </div>
-        </div>
+        <tr className="quiz_entry"><td>{props.name}</td></tr>
     )
 }
 
@@ -53,9 +44,10 @@ export default class CreateGame extends React.Component {
         return (
             <div className="component">
                 <h1 id="banner">Available Quizzes</h1>
-                <div className="width_100">
+                <table className="table_heading">
+                    <tr><th>Name</th></tr>
                     {this.state.quizComponents}
-                </div>
+                </table>
             </div>
         );
     }

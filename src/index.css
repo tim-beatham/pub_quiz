@@ -67,22 +67,28 @@ html, body, #root, #root > div {
     font-size: 1rem;
 }
 
-.quiz_component {
-    background-color: #00796b;
-    color: white;
-    width: 100%;
-    text-align: center;
-    margin-top: 1rem;
-}
 
-.width_100 {
+
+.table_heading {
     width: 100%;
+    color: white;
+    height: 6rem;
+    background-color: rebeccapurple;
 }
 
 .rotate_head {
     background-color: rebeccapurple;
     width: 120px;
     height: 120px;
+}
+
+.quiz_entry {
+    height: 3rem;
+    text-align: center;
+}
+
+.quiz_entry:hover {
+    background-color: red;
 }
 
 @keyframes spin {
