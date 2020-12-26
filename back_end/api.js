@@ -113,6 +113,8 @@ function checkObjects(obj1, obj2) {
     return true;
 }
 
+let eekeke = "djdjskdskjdsjkds";
+eekeke = eekeke.replaceAll(new RegExp("[^a-z|\\-|_|']"), "");
 
 
 
