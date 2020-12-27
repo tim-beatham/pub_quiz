@@ -1,13 +1,8 @@
 const express = require("express");
 const app = express();
 const http = require("http").createServer(app);
-const io = require("socket.io")(http, {
-    cors: {
-        origin: "*"
-    }
-});
+const {createIO} = require("./game");
 
-const {v4: uuidv4} = require("uuid");
 
 const bodyParser = require("body-parser");
 
@@ -74,20 +69,7 @@ app.get("/api/quiz", function (req, res) {
         });
 });
 
-
-let games = [];
-
-io.on("connection", (socket) => {
-    console.log("a user connected");
-
-    socket.on("createLobby", () => {
-        let id = uuidv4();
-        games.push(id);
-        socket.join(id);
-
-        socket.emit("gameCreated", uuidv4());
-    });
-});
+createIO(http);
 
 const PORT = 9000;
 http.listen(9000, () => {
@@ -112,9 +94,6 @@ function checkObjects(obj1, obj2) {
 
     return true;
 }
-
-let eekeke = "djdjskdskjdsjkds";
-eekeke = eekeke.replaceAll(new RegExp("[^a-z|\\-|_|']"), "");
 
 
 

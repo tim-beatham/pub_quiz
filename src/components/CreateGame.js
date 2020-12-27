@@ -6,6 +6,7 @@ function QuizComponent(props) {
     function showLobby() {
         props.setQuiz(props.quiz);
         props.showLobby();
+        props.setHost();
     }
 
     return (
@@ -40,6 +41,7 @@ export default class CreateGame extends React.Component {
                         questions={quiz.questions}
                         showLobby={this.props.showLobby}
                         setQuiz={this.props.setQuiz}
+                        setHost={this.props.setHost}
                     />);
                 });
                 this.setState({quizzes, quizComponents});
