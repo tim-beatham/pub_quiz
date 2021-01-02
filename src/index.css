@@ -130,6 +130,13 @@ p {
     padding: 1rem;
 }
 
+.error_component {
+    background-color: red;
+    text-align: center;
+    font-size: 4rem;
+    color: white;
+}
+
 @keyframes spin {
     0% {transform: rotate(0deg);}
     100% {transform: rotate(360deg);}

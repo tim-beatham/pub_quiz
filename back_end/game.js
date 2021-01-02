@@ -2,14 +2,17 @@
 
 const {v4: uuidv4} = require("uuid");
 
+let games = {};
+
+let io = null;
+
 function createIO(http) {
-    const io = require("socket.io")(http, {
+
+    io = require("socket.io")(http, {
         cors: {
             origin: "*"
         }
     });
-
-    let games = {};
 
     io.on("connection", (socket) => {
         console.log("a user connected");
@@ -24,12 +27,22 @@ function createIO(http) {
             socket.join(game.gameID);
 
             socket.emit("gameCreated", game.gameID);
-            io.to(game.gameID).emit("userJoined", game.getPlayers());
+
+            io.to(game.gameID).emit("usersUpdated", game.getPlayers());
+
             socket.emit("joinedGame", {
                     quizName: quiz.quiz_name, 
                     gameID: game.gameID,
                     gameMaster: username
-                });
+            });
+
+            socket.on("playerLeave", ({gameID, username}) => {
+                let game = games[gameID];
+                game.removePlayer(username);
+                io.to(game.gameID).emit("usersUpdated", game.getPlayers());
+            });
+
+            onDisconnectLobbyLeader(socket, io, username, game.gameID);
         });
 
         socket.on("getGames", () => {
@@ -37,8 +50,6 @@ function createIO(http) {
             let gameTable = [];
 
             Object.getOwnPropertyNames(games).forEach(game => {
-
-
                 let tableEntry = {game};
                 tableEntry["quiz"] = games[game].quiz.quiz_name;
                 tableEntry["numPlayers"] = Object.getOwnPropertyNames(games[game].players).length;
@@ -59,16 +70,45 @@ function createIO(http) {
 
                 socket.join(gameID);
 
-                io.to(gameID).emit("userJoined", games[gameID].getPlayers());
+                io.to(gameID).emit("usersUpdated", games[gameID].getPlayers());
                 socket.emit("joinedGame", {
                     quizName: games[gameID].quiz.quiz_name, 
                     gameID,
                     gameMaster: games[gameID].gameMaster.player
                 });
+
+                onDisconnectParticipant(socket, io, username, gameID);
             }
         });
     });
 }
+
+
+function onDisconnectLobbyLeader(socket, io, username, gameID) {
+    socket.on("disconnect", () => {
+        let game = games[gameID];
+        game.removePlayer(username);
+        io.to(game.gameID).emit("usersUpdated", game.getPlayers ());
+        io.to(game.gameID).emit("quizMasterDisconnect");
+        delete games[gameID];
+    }); 
+}
+
+/**
+ * 
+ * @param {*} socket        the player's socket
+ * @param {*} io            the reference to the socket.io object
+ * @param {*} username      the username of the user that disconnected
+ * @param {*} gameID        the gameID that the user was connected to
+ */
+function onDisconnectParticipant (socket, io, username, gameID) {
+    socket.on("disconnect", () => {
+        let game = games[gameID];
+        game.removePlayer(username);
+        io.to(game.gameID).emit("usersUpdated", game.getPlayers());
+    }); 
+}
+
 
 class Game {
     constructor (quiz) {
@@ -91,8 +131,11 @@ class Game {
         this.players[username] = new Player(username, socket);
     }
 
-    removePlayer(name) {
+    removePlayer(usernameToRemove) {
         // TODO: Remove the player from the game
+        if (this.players[usernameToRemove]) {
+            delete this.players[usernameToRemove];
+        }
     }
 }
 

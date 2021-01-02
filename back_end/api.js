@@ -71,8 +71,8 @@ app.get("/api/quiz", function (req, res) {
 
 createIO(http);
 
-const PORT = 9000;
-http.listen(9000, () => {
+const PORT = 5000;
+http.listen(5000, () => {
     console.log(`Listening on port ${PORT}`);
 })
 

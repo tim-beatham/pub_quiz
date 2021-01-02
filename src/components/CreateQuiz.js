@@ -1,6 +1,6 @@
 import React from "react";
 
-const API_URL = "http://localhost:9000/api/quiz";
+const API_URL = "http://localhost:5000/api/quiz";
 
 function TitleComponent(props) {
     return (

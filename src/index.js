@@ -6,14 +6,15 @@ import CreateGame from "./components/CreateGame";
 import CreateQuiz from "./components/CreateQuiz";
 import GameLobby from "./components/GameLobby";
 import JoinGame from "./components/JoinGame";
-
+import ErrorComponent from "./components/ErrorComponent";
 
 const STATES = {
     MAIN_MENU: "main-menu",
     CREATE_QUIZ: "create-quiz",
     CREATE_GAME: "create-game",
     SHOW_LOBBY: "show-lobby",
-    JOIN_GAME: "join-game"
+    JOIN_GAME: "join-game",
+    ERROR: "error"
 }
 
 class App extends React.Component {
@@ -25,6 +26,7 @@ class App extends React.Component {
             quiz: {},
             username: "",
             gameID: "",
+            errorMsg: "",
             isHost: false,
         }
     }
@@ -45,6 +47,9 @@ class App extends React.Component {
                 break;
             case "join-game":
                 this.setState({currentComponent: STATES.JOIN_GAME});
+                break;
+            case "error":
+                this.setState({currentComponent: STATES.ERROR});
                 break;
             default:
                 this.setState({currentComponent: STATES.MAIN_MENU});
@@ -81,8 +86,12 @@ class App extends React.Component {
                     quiz={this.state.quiz}
                     host={this.state.isHost}
                     setGameID={(gameID) => this.setState({gameID})}
-                    getUsername={() => this.state.username}
+                    username = {this.state.username}
                     getGameID={() => this.state.gameID.trim()}
+                    showError = {(errorMsg) => {
+                        this.setState({errorMsg});
+                        this.showComponent("error");
+                    }}
                 />
                 break;
             case STATES.JOIN_GAME:
@@ -90,6 +99,11 @@ class App extends React.Component {
                     setNotHost={() => this.setState({isHost: false})}
                     setGameID={(gameID) => this.setState({gameID})}
                     showLobby={() => this.showComponent("show-lobby")}
+                />
+                break;
+            case STATES.ERROR:
+                component = <ErrorComponent
+                    errorMsg={this.state.errorMsg}
                 />
                 break;
             default:

@@ -1,7 +1,7 @@
 import React from 'react';
 import io from "socket.io-client";
 
-const ENDPOINT = "http://localhost:9000";
+const ENDPOINT = "http://localhost:5000";
 
 
 export default class GameLobby extends React.Component{
@@ -22,8 +22,29 @@ export default class GameLobby extends React.Component{
         this.socketEvents();
 
         this.props.host ? this.createLobby() : this.joinLobby();
+        
+        window.addEventListener("beforeunload", (e) => {
+            e.preventDefault();
+            e.returnValue = "Are you sure you want to leave?";
+            this.socket.close();
+        });
+
+        this.socket.on("quizMasterDisconnect", () => {
+            this.socket.close();
+            this.props.showError("Lobby Leader Disconnected");
+        });
     }
 
+    componentWillUnmount() {
+        this.socket.close();
+    }
+
+    leaveLobby = () => {
+        this.socket.emit("playerLeave", { 
+            gameID: this.state.gameID, 
+            username: this.props.username
+        });
+    }
 
     generateStyle = (player) => {
         if (player === this.state.gameMaster) {
@@ -38,18 +59,17 @@ export default class GameLobby extends React.Component{
     }
 
     socketEvents = () => {
-        this.socket.on("userJoined", (players) => {
+        this.socket.on("usersUpdated", (players) => {
             this.setState({players});
         });
 
         this.socket.on("joinedGame", ({quizName, gameID, gameMaster}) => {
-
             this.setState({quizName, gameID, gameMaster});
         });
     }
 
     createLobby = () => {
-        this.socket.emit("createLobby", {username: this.props.getUsername(), quiz: this.props.quiz});
+        this.socket.emit("createLobby", {username: this.props.username, quiz: this.props.quiz});
 
         this.socket.on("gameCreated", (id) => {
             this.setState({gameID: id});
@@ -58,8 +78,7 @@ export default class GameLobby extends React.Component{
     }
 
     joinLobby = () => {
-        // TODO: DO THE JOIN SOCKET PROTOCOL.
-        this.socket.emit("joinGame", ({gameID: this.props.getGameID(), username: this.props.getUsername()}));
+        this.socket.emit("joinGame", ({gameID: this.props.getGameID(), username: this.props.username}));
     }
 
     render() {
