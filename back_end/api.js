@@ -74,7 +74,7 @@ createIO(http);
 const PORT = 5000;
 http.listen(5000, () => {
     console.log(`Listening on port ${PORT}`);
-})
+});
 
 function checkObjects(obj1, obj2) {
     const attributeNames1 = Object.getOwnPropertyNames(obj1);

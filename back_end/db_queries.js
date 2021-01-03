@@ -4,6 +4,10 @@ const MongoClient = mongo.MongoClient;
 const url = "mongodb://localhost:27017/";
 
 
+/**
+ * Post a new quiz to the database.
+ * @param {*} quiz 
+ */
 function postQuiz(quiz) {
     MongoClient.connect(url, function (err, db) {
         if (err) throw err;
@@ -18,6 +22,9 @@ function postQuiz(quiz) {
     });
 }
 
+/**
+ * Fetch all the quizzes in the game.
+ */
 async function fetchQuizzes() {
     let client, db;
 
@@ -32,6 +39,11 @@ async function fetchQuizzes() {
     return result;
 }
 
+
+/**
+ * Fetch the quiz with the given ID.
+ * @param {*} id 
+ */
 async function fetchQuiz(id) {
     let client, db;
 

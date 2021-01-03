@@ -3,6 +3,22 @@ import io from "socket.io-client";
 
 const ENDPOINT = "http://localhost:5000";
 
+const NUM_START = 3;
+
+
+function StartGameButton(props) {
+    
+    function onClick() {
+        if (props.getNumPlayers() > NUM_START) {
+            props.startGame();
+        }
+    }
+    
+    return (
+        <button onClick={onClick}>Start Game</button>
+    );
+} 
+
 
 export default class GameLobby extends React.Component{
     constructor(props) {
@@ -81,6 +97,10 @@ export default class GameLobby extends React.Component{
         this.socket.emit("joinGame", ({gameID: this.props.getGameID(), username: this.props.username}));
     }
 
+    startGame = () => {
+        // TODO: Trigger the game to start.
+    }
+
     render() {
         return (
             <div className="component">
@@ -90,6 +110,10 @@ export default class GameLobby extends React.Component{
                 <div id="players_section">
                     {this.generatePlayerComponents()}
                 </div>
+                {this.state.gameMaster === this.props.username && <StartGameButton 
+                    getNumPlayers={() => this.state.players.length}
+                    startGame={this.startGame}
+                />}
             </div>
         )
     }
