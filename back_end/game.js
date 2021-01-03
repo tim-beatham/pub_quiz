@@ -85,7 +85,33 @@ function onJoinGame(io, socket) {
             });
 
             onDisconnectParticipant(socket, io, username, gameID);
+            onAnswerQuestion(socket, username, gameID);
+            onLeaderboard(socket, gameID);
         }
+    });
+}
+
+
+/**
+ * When the marker marks the questions
+ * that the user's have provided.
+ * 
+ * @param {*} socket 
+ * @param {*} gameID 
+ */
+function onMarkQuestions(socket, gameID) {
+    socket.on("userAnswers", (answersObj) => {
+
+        let game = games[gameID];
+
+        // If the user
+        Object.getOwnPropertyNames(answersObj).forEach(username => {
+            if (answersObj[username]) {
+                game.players[username].score++;
+            }
+        });
+
+        sendNextQuestion(socket, gameID);
     });
 }
 
@@ -105,8 +131,6 @@ function onGetGame(io, socket) {
             tableEntry["quiz"] = games[game].quiz.quiz_name;
             tableEntry["numPlayers"] = Object.getOwnPropertyNames(games[game].players).length;
             tableEntry["gameMaster"] = games[game].gameMaster.player;
-
-            console.log(tableEntry);
 
             gameTable.push(tableEntry);
         });
@@ -136,7 +160,10 @@ function onCreateGame(io, socket) {
                 gameMaster: username
         });
 
+        onStartGame(socket, game.gameID);
         onDisconnectLobbyLeader(socket, io, username, game.gameID);
+        onMarkQuestions(socket, game.gameID);
+        onLeaderboard(socket, game.gameID);
     });
 }
 
@@ -147,9 +174,9 @@ function onCreateGame(io, socket) {
  * @param {*} socket 
  * @param {*} gameID 
  */
-function onStartGame(io, socket, gameID) {
-    socket.on("startGame", (gameID) => {
-        io.to(gameID).emit("gameStarted");
+function onStartGame(socket, gameID) {
+    socket.on("startGame", () => {
+        sendNextQuestion(socket, gameID);
     });
 }
 
@@ -163,9 +190,32 @@ function onStartGame(io, socket, gameID) {
  */
 function sendNextQuestion(socket, gameID){
     let game = games[gameID];
-    socket.to(gameID).emit("nextQuestion", game.questions[game.currentQuizIndex]);
+
+    if (game.currentQuizIndex < game.quiz.questions.length) {
+        io.to(gameID).emit("nextQuestion", game.quiz.questions[game.currentQuizIndex++].question);
+        return;
+    }
+    io.to(gameID).emit("gameEnded");
 }
 
+
+function onLeaderboard(socket, gameID) {
+
+    socket.on("getLeaderboard", () => {
+        let game = games[gameID];
+
+        let players = Object.values(game.players);
+
+        players.sort((p1, p2) => p2.score - p1.score);
+        players = players.map(player => player.player);
+
+
+        let index = players.indexOf(game.gameMaster.player);
+        players.splice(index, 1);
+
+        socket.emit("leaderboard", players);
+    });
+} 
 
 /**
  * Triggered when the user answers
@@ -174,8 +224,8 @@ function sendNextQuestion(socket, gameID){
  * @param {*} socket 
  * @param {*} gameID 
  */
-function answerQuestion(socket, gameID) {
-    socket.on("questionAnswered", ({answer, username, gameID}) => {
+function onAnswerQuestion(socket, username, gameID) {
+    socket.on("submitAnswer", (answer) => {
         let game = games[gameID];
 
         let gamemasterSocket = game.getGameMasterSocket();
@@ -183,8 +233,6 @@ function answerQuestion(socket, gameID) {
         gamemasterSocket.emit("userAnswer", {answer, username});
     });
 }
-
-
 
 /**
  * Represents an instancer of a game.
@@ -208,7 +256,7 @@ class Game {
     }
 
     getGameMasterSocket = () => {
-        return this.players[this.gameMaster].socket;
+        return this.gameMaster.socket;
     }
 
     /**
@@ -250,6 +298,7 @@ class Game {
 function Player(player, socket) {
     this.player = player;
     this.socket = socket;
+    this.score = 0;
 }
 
 exports.createIO = createIO;

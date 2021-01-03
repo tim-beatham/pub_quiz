@@ -4,7 +4,7 @@ import "./index.css";
 import MainMenu from "./components/MainMenu"
 import CreateGame from "./components/CreateGame";
 import CreateQuiz from "./components/CreateQuiz";
-import GameLobby from "./components/GameLobby";
+import Game from "./components/GameLobby";
 import JoinGame from "./components/JoinGame";
 import ErrorComponent from "./components/ErrorComponent";
 
@@ -82,7 +82,7 @@ class App extends React.Component {
                 />;
                 break;
             case STATES.SHOW_LOBBY:
-                component = <GameLobby
+                component = <Game
                     quiz={this.state.quiz}
                     host={this.state.isHost}
                     setGameID={(gameID) => this.setState({gameID})}

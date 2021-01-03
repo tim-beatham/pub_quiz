@@ -27,7 +27,7 @@ class QuestionAnswer extends React.Component {
     }
 
     modifyAnswer = (event) => {
-        this.props.modifyQuestion(event.target.value, this.state.answer);
+        this.props.modifyQuestion(this.state.question, event.target.value);
         this.setState({answer: event.target.value});
     }
 

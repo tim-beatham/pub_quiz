@@ -130,11 +130,23 @@ p {
     padding: 1rem;
 }
 
+.answer_component {
+    flex-grow: 1;
+    margin: 2rem;
+    padding: 1rem;
+    background-color: yellow;
+}
+
 .error_component {
     background-color: red;
     text-align: center;
     font-size: 4rem;
     color: white;
+}
+
+#answer_section {
+    display: flex;
+    flex-wrap: wrap;
 }
 
 @keyframes spin {
