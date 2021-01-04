@@ -1,6 +1,8 @@
 import React from 'react';
 
-const FETCH_ENDPOINT = "http://localhost:5000/api/quizzes";
+const {httpEndPoint} = require("../config.json");
+
+const FETCH_ENDPOINT = `${httpEndPoint}/api/quizzes`;
 
 function QuizComponent(props) {
     function showLobby() {

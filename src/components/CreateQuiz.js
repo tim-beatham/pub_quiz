@@ -1,7 +1,15 @@
 import React from "react";
 
-const API_URL = "http://localhost:5000/api/quiz";
+const {httpEndPoint} = require("../config.json");
 
+const API_URL = `${httpEndPoint}/api/quiz`;
+
+/**
+ * The component that allows you to change the title
+ * within the quiz.
+ * 
+ * @param {*} props 
+ */
 function TitleComponent(props) {
     return (
         <div>
@@ -9,7 +17,7 @@ function TitleComponent(props) {
             <input type="text" value={props.title} onChange={(event) => props.setTitle(event.target.value)}/>
         </div>
     );
-}
+}   
 
 class QuestionAnswer extends React.Component {
     constructor(props) {
@@ -52,31 +60,61 @@ function EditWidget(props) {
     );
 }
 
+
+/**
+ * Component that allows you to create a quiz
+ * and preview the given quiz.
+ */
 export default class CreateQuiz extends React.Component {
 
     constructor(props) {
         super(props);
 
         this.state = {
+            // If true it allows us to edit the quiz.
+            // If flase then we preview the quiz.
             showEdit: true,
+            // The title of the quiz.
             title: "",
+            // The question components of the quiz.
             questionComponents: [],
+            // The questions that the user has created.
             questions: []
         }
     }
 
+    /**
+     * Inverts the edit state
+     * parameter.
+     */
     toggleState = () => {
         this.setState({showEdit: !this.state.showEdit});
     }
 
+    /**
+     * Sets the title of the given quiz.
+     * 
+     * @param {string} title    the title of the quiz. 
+     */
     setTitle = (title) => {
         this.setState({title});
     }
 
+    /**
+     * Modifies the given quiz question.
+     * 
+     * @param {*} index         the index of the question in the list 
+     * @param {*} question      the question to ask
+     * @param {*} answer        the answer of the question
+     */
     modifyQuestion = (index, question, answer) => {
-        this.setState({questions: [...this.state.questions.slice(0, index), {question, answer}, ...this.state.questions.slice(index + 1)]});
+        this.setState({questions: [...this.state.questions.slice(0, index), 
+            {question, answer}, ...this.state.questions.slice(index + 1)]});
     }
 
+    /**
+     * Adds a question to the component.
+     */
     addQuestionAnswer = () => {
         this.setState({questions: [...this.state.questions, {question: "", answer: ""}]});
     }
@@ -108,11 +146,19 @@ export default class CreateQuiz extends React.Component {
     }
 }
 
+
+/**
+ * Allows the user to edit the quiz component.
+ */
 class EditQuiz extends React.Component {
 
     constructor(props) {
         super(props);
 
+        /**
+         * Maps the quiz questions to question
+         * componentys.
+         */
         let questionComponents = this.props.getQuestions().map((question, numQuestion) => {
             return <QuestionAnswer
                 key={numQuestion}
@@ -122,10 +168,15 @@ class EditQuiz extends React.Component {
         });
 
         this.state = {
+            // Adds the question components to the given state.
             questionComponents: questionComponents
         }
     }
 
+    /**
+     * Adds a question component to the 
+     * state.
+     */
     addQuestionComponent = () => {
         let numQuestion = this.state.questionComponents.length;
 
@@ -170,6 +221,13 @@ function PreviewQuestionWidget(props) {
     );
 }
 
+
+/**
+ * Shows the preview state.
+ * 
+ * Allows the user to review the questions they have created 
+ * before uploading them to the server.
+ */
 class Preview extends React.Component {
     constructor(props) {
         super(props);

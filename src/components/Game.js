@@ -1,11 +1,11 @@
 import React, {useState} from 'react';
 import io from "socket.io-client";
 
-const ENDPOINT = "http://localhost:5000";
+const {httpEndPoint} = require("../config.json");
 
 const NUM_START = 3;
 
-let socket = io(ENDPOINT);
+let socket = io(httpEndPoint);
 
 const STATES = {
     GAME_LOBBY: "game-lobby",
@@ -221,7 +221,7 @@ export default class Game extends React.Component{
     }
 
     componentDidMount() {
-        socket = io(ENDPOINT);
+        socket = io(httpEndPoint);
 
         socket.open();
 
