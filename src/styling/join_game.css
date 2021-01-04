@@ -1,0 +1,27 @@
+
+
+#join_table {
+    width: 100%;
+    color: white;
+    height: 6rem;
+}
+
+#join_table > thead tr{
+    background-color: teal;
+    height: 5rem;
+}
+
+#join_table tr {
+    height: 5rem;
+    text-align: center;
+    background-color: #202020;
+}
+
+#join_table tr:hover {
+    background-color: red;
+}
+
+#join_game {
+    text-align: center;
+}
+

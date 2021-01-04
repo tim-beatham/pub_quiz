@@ -1,5 +1,7 @@
 import React from 'react';
 
+import "../styling/create_game.css";
+
 const {httpEndPoint} = require("../config.json");
 
 const FETCH_ENDPOINT = `${httpEndPoint}/api/quizzes`;
@@ -52,17 +54,28 @@ export default class CreateGame extends React.Component {
 
     render() {
         return (
-            <div className="component">
-                <h1 id="banner">Available Quizzes</h1>
-                <table className="table_heading">
-                    <thead>
-                        <tr><th>Name</th></tr>
-                    </thead>
-                    <tbody>
-                        {this.state.quizComponents}
-                    </tbody>
+            <div id="create_game" className="col-100">
+                <h1 id="banner">Create Game</h1>
 
-                </table>
+                {this.state.quizComponents.length > 0 && 
+                    <div>
+                        <h1>List Of Available quizzes</h1>
+                        <table id="create_game_table">
+                            <thead>
+                                <tr><th>Name</th></tr>
+                            </thead>
+                            <tbody>
+                                {this.state.quizComponents}
+                            </tbody>
+        
+                        </table>
+                    </div>
+                }
+
+                {this.state.quizComponents.length === 0 && 
+                    <h1>No Quizzes Aviablae Create One!</h1>
+                }
+
             </div>
         );
     }

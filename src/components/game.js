@@ -1,6 +1,8 @@
 import React, {useState} from 'react';
 import io from "socket.io-client";
 
+import "../styling/game.css"
+
 const {httpEndPoint} = require("../config.json");
 
 const NUM_START = 3;
@@ -25,7 +27,7 @@ function StartGameButton(props) {
     }
 
     return (
-        <button onClick={startGame}>Start Game</button>
+        <input type="button" id="start_game_button" value="Start Game" onClick={startGame} />
     );
 } 
 
@@ -41,10 +43,15 @@ class QuestionSection extends React.Component {
 
     render () {
         return (
-            <div className="component">
-                <h3 id="banner">{this.props.question}</h3>
-                <textarea onChange={(e) => this.setState({answer: e.target.value})}></textarea>
-                <button onClick={() => this.props.submitAnswer(this.state.answer)}>Enter</button>
+            <div id="question_component" className="col-100">
+                <h1 id="banner">
+                    {this.props.question}
+                </h1>
+                <div>
+                    <label>Enter the answer:</label>
+                    <input type="text" onChange={(e) => this.setState({answer: e.target.value})} />
+                    <button onClick={() => this.props.submitAnswer(this.state.answer)}>Enter</button>
+                </div>
             </div>
         );
     }
@@ -107,12 +114,14 @@ class GameMasterSection extends React.Component {
 
     render () {
         return (
-            <div className="component">
-                <h3 id="banner">{this.props.question}</h3>
+            <div id="game_master" className="col-100">
+                <h1 id="banner">{this.props.question}</h1>
 
-                {this.state.userQuestions.length === 0 && <h2>
-                    0 user's have submitted their answers.    
-                </h2>}
+                {this.state.userQuestions.length === 0 && 
+                    <div>
+                        <h2>Waiting For Users To Submit Answers</h2>
+                        <div class="loader"></div>
+                    </div>}
 
                 <div id="answer_section">
                     {this.state.userQuestions}
@@ -129,7 +138,8 @@ class WaitSection extends React.Component {
     render () {
         return (
             <div className="component">
-                <h3 id="banner">Waiting</h3>
+                <h1 id="banner">Waiting</h1>
+                <div className="loader"></div>
             </div>
         )
     }
@@ -152,8 +162,8 @@ class EndState extends React.Component {
         socket.on("leaderboard", leaderboard => {
             let players = [];
             
-            leaderboard.forEach(player => {
-                players.push(<h3>{player}</h3>);
+            leaderboard.forEach((player, index) => {
+                players.push(<h1>{`${index + 1}) ${player}`}</h1>);
             });
             
             // Set the state of the component.
@@ -190,7 +200,7 @@ class GameLobby extends React.Component {
 
     render () {
         return (
-            <div className="component">
+            <div id="game_lobby" className="col-100">
                 <h1 id="banner">Game Lobby</h1>
                 <p>{this.props.gameID}</p>
                 <p>{this.props.quizName}</p>
@@ -326,7 +336,7 @@ export default class Game extends React.Component{
         }
 
         return (
-            <div>
+            <div id="game_section">
                 {component}
             </div>
         )

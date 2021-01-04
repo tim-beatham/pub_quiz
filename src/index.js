@@ -1,12 +1,15 @@
 import React from "react";
 import ReactDOM from 'react-dom';
-import "./index.css";
-import MainMenu from "./components/MainMenu"
-import CreateGame from "./components/CreateGame";
-import CreateQuiz from "./components/CreateQuiz";
-import Game from "./components/Game";
-import JoinGame from "./components/JoinGame";
-import ErrorComponent from "./components/ErrorComponent";
+
+import "./styling/content.css";
+import "./styling/structure.css";
+
+import MainMenu from "./components/main_menu"
+import CreateGame from "./components/create_game";
+import CreateQuiz from "./components/create_quiz";
+import Game from "./components/game";
+import JoinGame from "./components/join_game";
+import ErrorComponent from "./components/error_component";
 
 
 /**

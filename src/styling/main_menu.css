@@ -1,0 +1,14 @@
+.menu_button {
+    width: 10rem;
+    height: 7rem;
+    text-align: center;
+    color: white;
+    text-decoration: none;
+    display: inline-block;
+    background-color: #00796b;
+    margin: 2rem auto;
+}
+
+#main_menu > :not([id="banner"]) {
+    margin: 1rem auto;
+}

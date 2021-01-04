@@ -1,5 +1,7 @@
 import React from "react";
 
+import "../styling/create_quiz.css";
+
 const {httpEndPoint} = require("../config.json");
 
 const API_URL = `${httpEndPoint}/api/quiz`;
@@ -41,10 +43,10 @@ class QuestionAnswer extends React.Component {
 
     render() {
         return (
-            <div>
-                <p className="formLabel">Question: </p>
+            <div className="question_answer">
+                <p className="form_label">Question: </p>
                 <input type="text" value={this.state.question} onChange={this.modifyQuestion}/>
-                <p className="formLabel">Answer: </p>
+                <p className="form_label">Answer: </p>
                 <input type="text" value={this.state.answer} onChange={this.modifyAnswer}/>
             </div>
         )
@@ -53,7 +55,7 @@ class QuestionAnswer extends React.Component {
 
 function EditWidget(props) {
     return (
-        <div>
+        <div id="add_widget">
             <input type="button" onClick={props.addQuestion} value="Add Question"/>
             <input type="button" onClick={props.showPreview} value="Show Preview"/>
         </div>
@@ -76,8 +78,6 @@ export default class CreateQuiz extends React.Component {
             showEdit: true,
             // The title of the quiz.
             title: "",
-            // The question components of the quiz.
-            questionComponents: [],
             // The questions that the user has created.
             questions: []
         }
@@ -195,7 +195,7 @@ class EditQuiz extends React.Component {
 
     render() {
         return (
-            <div className="component">
+            <div id="edit_quiz" className="col-100">
                 <h1 id="banner">Create Quiz</h1>
                 <TitleComponent title={this.props.title} setTitle={this.props.setTitle}/>
                 <div id="questions">
@@ -212,11 +212,9 @@ class EditQuiz extends React.Component {
 
 function PreviewQuestionWidget(props) {
     return (
-        <div>
-            <h1 id="preview_question">{props.question}</h1>
+        <div id="preview_question">
+            <h1>{props.question}</h1>
             <p id="preview_answer">{props.answer}</p>
-            {props.hasNext() && <input type="button" value="Next" onClick={props.nextQuestion}/>}
-            {!props.hasNext() && <input type="button" value="Submit" onClick={props.showMainMenu}/>}
         </div>
     );
 }
@@ -262,8 +260,9 @@ class Preview extends React.Component {
 
     render() {
         return (
-            <div className="component">
+            <div id="preview_quiz" className="col-100">
                 <h1 id="banner">{this.state.title}</h1>
+                
                 <PreviewQuestionWidget
                     question={this.getQuestion()}
                     answer={this.getAnswer()}
@@ -271,7 +270,14 @@ class Preview extends React.Component {
                     nextQuestion={this.nextQuestion}
                     showMainMenu={this.submit}
                 />
-                <input type="button" value="Edit" onClick={this.props.showEdit}/>
+
+                <div id="preview_widget">
+                    <input type="button" value="Edit" onClick={this.props.showEdit}/>
+                    {this.hasNext() && <input type="button" value="Next" onClick={this.nextQuestion}/>}
+                    {!this.hasNext() && <input type="button" value="Submit" onClick={this.submit}/>}
+                </div>
+                
+                
             </div>
         );
     }

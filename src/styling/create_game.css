@@ -1,0 +1,27 @@
+
+
+#create_game_table {
+    width: 100%;
+    color: white;
+    height: 6rem;
+}
+
+#create_game_table > thead tr{
+    background-color: teal;
+    height: 5rem;
+}
+
+.quiz_entry {
+    height: 5rem;
+    text-align: center;
+    background-color: #202020;
+}
+
+.quiz_entry:hover {
+    background-color: red;
+}
+
+#create_game {
+    text-align: center;
+}
+

@@ -2,7 +2,10 @@ import React from "react"
 
 import io from "socket.io-client";
 
-const ENDPOINT = "http://localhost:5000";
+import "../styling/join_game.css";
+
+import {httpEndPoint} from "../config.json"
+
 
 
 function GameComponent(props) {
@@ -27,7 +30,7 @@ export default class JoinGame extends React.Component {
     }
 
     componentDidMount () {
-        this.socket = io(ENDPOINT);
+        this.socket = io(httpEndPoint);
 
         this.socket.emit("getGames");
 
@@ -51,17 +54,21 @@ export default class JoinGame extends React.Component {
 
     render () {
         return (
-            <div className="component">
+            <div id="join_game" className="col-100">
                 <h1 id="banner">Join Game</h1>
 
-                {this.state.gameComponents.length > 0 && <table id="join_table">
-                    <thead>
-                        <tr><th>Game ID</th><th>Quiz Name</th><th>Number Of Players</th><th>Quiz Master</th></tr>
-                    </thead>
-                    <tbody>
-                        {this.state.gameComponents}
-                    </tbody>
-                </table>}
+                {this.state.gameComponents.length > 0 && 
+                <div>
+                    <h1>List of Games:</h1>
+                    <table id="join_table">
+                        <thead>
+                            <tr><th>Game ID</th><th>Quiz Name</th><th>Number Of Players</th><th>Quiz Master</th></tr>
+                        </thead>
+                        <tbody>
+                            {this.state.gameComponents}
+                        </tbody>
+                    </table>
+                </div>}
 
 
                 {this.state.gameComponents.length === 0 && <h1>No Games Available</h1>}
