@@ -16,7 +16,7 @@ function TitleComponent(props) {
     return (
         <div>
             <p className="formLabel">Title:</p>
-            <input type="text" value={props.title} onChange={(event) => props.setTitle(event.target.value)}/>
+            <input type="text" value={props.title} onChange={(event) => props.setTitle(event.target.value.trim())}/>
         </div>
     );
 }   
@@ -32,13 +32,13 @@ class QuestionAnswer extends React.Component {
     }
 
     modifyQuestion = (event) => {
-        this.props.modifyQuestion(event.target.value, this.state.answer);
-        this.setState({question: event.target.value});
+        this.props.modifyQuestion(event.target.value.trim(), this.state.answer);
+        this.setState({question: event.target.value.trim()});
     }
 
     modifyAnswer = (event) => {
-        this.props.modifyQuestion(this.state.question, event.target.value);
-        this.setState({answer: event.target.value});
+        this.props.modifyQuestion(this.state.question, event.target.value.trim());
+        this.setState({answer: event.target.value.trim()});
     }
 
     render() {
@@ -157,7 +157,7 @@ class EditQuiz extends React.Component {
 
         /**
          * Maps the quiz questions to question
-         * componentys.
+         * components.
          */
         let questionComponents = this.props.getQuestions().map((question, numQuestion) => {
             return <QuestionAnswer
@@ -169,7 +169,9 @@ class EditQuiz extends React.Component {
 
         this.state = {
             // Adds the question components to the given state.
-            questionComponents: questionComponents
+            questionComponents: questionComponents,
+            titleValid: true,
+            questionsValid: true
         }
     }
 
@@ -192,19 +194,61 @@ class EditQuiz extends React.Component {
             });
     }
 
+    titleValid = () => {
+        return this.props.title !== "";
+    }
+
+    questionsValid = () => {
+        let questions = this.props.getQuestions();
+
+        questions.forEach (question => {
+            console.log(question);
+            if (question.question === "" || question.answer === "") {
+                return false;
+            }
+        });
+
+
+        if (questions.length === 0)
+            return false;
+
+        return true;
+    }
+
+    showPreview = () => {
+        if (!this.questionsValid()) {
+            this.setState({questionsValid: false});
+        }  
+
+        if (!this.titleValid()) {
+            this.setState({titleValid: false});
+        }
+
+        if (this.titleValid() && this.questionsValid()) {
+            this.setState({questionsValid: true});
+            this.setState({titleValid: true});
+            this.props.showPreview();
+        }
+    }
+
 
     render() {
         return (
             <div id="edit_quiz" className="col-100">
                 <h1 id="banner">Create Quiz</h1>
                 <TitleComponent title={this.props.title} setTitle={this.props.setTitle}/>
+
+                {!this.state.titleValid && <h2>Please Enter A Value For The Title!</h2>}
+
                 <div id="questions">
                     {this.state.questionComponents}
                 </div>
                 <EditWidget
                     addQuestion={this.addQuestionComponent}
-                    showPreview={this.props.showPreview}
+                    showPreview={this.showPreview}
                 />
+
+                {!this.state.questionsValid && <h2>Please add a question or fill in your questions!</h2>}
             </div>
         );
     }

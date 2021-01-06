@@ -243,11 +243,7 @@ export default class Game extends React.Component{
             socket.close();
         });
 
-        socket.on("quizMasterDisconnect", () => {
-            socket.close();
-            this.props.showError("Lobby Leader Disconnected");
-        });
-
+        
         this.socketEvents();
     }
 
@@ -274,6 +270,15 @@ export default class Game extends React.Component{
 
         socket.on("gameEnded", () => {
             this.setState({currentState: STATES.END_STATE});
+        });
+
+        socket.on("quizMasterDisconnect", () => {
+            socket.close();
+            this.props.showError("Lobby Leader Disconnected");
+        });
+
+        socket.on("usernameTaken", (username) => {
+            this.props.showError(`Username '${username}' is already taken`);
         });
     }
 

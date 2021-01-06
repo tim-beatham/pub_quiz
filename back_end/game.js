@@ -40,10 +40,12 @@ function createIO(http) {
 function onDisconnectLobbyLeader(socket, io, username, gameID) {
     socket.on("disconnect", () => {
         let game = games[gameID];
-        game.removePlayer(username);
-        io.to(game.gameID).emit("usersUpdated", game.getPlayers ());
-        io.to(game.gameID).emit("quizMasterDisconnect");
-        delete games[gameID];
+        if (game !== undefined) {
+            game.removePlayer(username);
+            io.to(game.gameID).emit("usersUpdated", game.getPlayers());
+            io.to(game.gameID).emit("quizMasterDisconnect");
+            delete games[gameID];
+        }
     }); 
 }
 
@@ -58,8 +60,10 @@ function onDisconnectLobbyLeader(socket, io, username, gameID) {
 function onDisconnectParticipant (socket, io, username, gameID) {
     socket.on("disconnect", () => {
         let game = games[gameID];
-        game.removePlayer(username);
-        io.to(game.gameID).emit("usersUpdated", game.getPlayers());
+        if (game) {
+            game.removePlayer(username);
+            io.to(game.gameID).emit("usersUpdated", game.getPlayers());
+        } 
     }); 
 }
 
@@ -71,8 +75,13 @@ function onDisconnectParticipant (socket, io, username, gameID) {
  */
 function onJoinGame(io, socket) {
     socket.on("joinGame", ({username, gameID}) => {
-
         if (games[gameID]) {
+
+            if (Object.getOwnPropertyNames(games[gameID].players).indexOf(username) !== -1) {
+                socket.emit("usernameTaken", username);
+                return;
+            }
+
             games[gameID].addPlayer(username, socket);
 
             socket.join(gameID);
@@ -127,12 +136,14 @@ function onGetGame(io, socket) {
         let gameTable = [];
 
         Object.getOwnPropertyNames(games).forEach(game => {
-            let tableEntry = {game};
-            tableEntry["quiz"] = games[game].quiz.quiz_name;
-            tableEntry["numPlayers"] = Object.getOwnPropertyNames(games[game].players).length;
-            tableEntry["gameMaster"] = games[game].gameMaster.player;
+            if (games[game].started === false) {
+                let tableEntry = {game};
+                tableEntry["quiz"] = games[game].quiz.quiz_name;
+                tableEntry["numPlayers"] = Object.getOwnPropertyNames(games[game].players).length;
+                tableEntry["gameMaster"] = games[game].gameMaster.player;
 
-            gameTable.push(tableEntry);
+                gameTable.push(tableEntry);
+            }
         });
 
         socket.emit("displayGames", gameTable);
@@ -176,6 +187,7 @@ function onCreateGame(io, socket) {
  */
 function onStartGame(socket, gameID) {
     socket.on("startGame", () => {
+        games[gameID].started = true;
         sendNextQuestion(socket, gameID);
     });
 }
@@ -245,6 +257,7 @@ class Game {
         this.players = {};
         this.gameMaster = null;
         this.currentQuizIndex = 0;
+        this.started = false;
     }
 
     /**

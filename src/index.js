@@ -56,6 +56,7 @@ class App extends React.Component {
                     showCreateGame={() => this.setState({currentComponent: STATES.CREATE_GAME})}
                     showJoinGame={() => this.setState({currentComponent: STATES.JOIN_GAME})}
                     setUsername={(username) => this.setState({username})}
+                    username={this.state.username}
                 />;
                 break;
             case STATES.CREATE_QUIZ:
