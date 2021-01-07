@@ -28,7 +28,7 @@ export default class MainMenu extends React.Component {
             return;
         }
 
-        this.setState({showInva idUsername: true});
+        this.setState({showInvalidUsername: true});
     }
 
     render () {

@@ -88,12 +88,11 @@ class GameMasterSection extends React.Component {
 
     componentDidMount () {
         socket.on("userAnswer", ({answer, username}) => {
-            console.log(answer)
             this.setState({userQuestions: [...this.state.userQuestions, 
-            <UserQuestionComponent  answer={answer} 
-                                    username={username} 
-                                    setAnswer={this.setAnswer}
-                                    />]});
+                                                <UserQuestionComponent  answer={answer} 
+                                                                        username={username} 
+                                                                        setAnswer={this.setAnswer}
+                                                                        />]});
         });
     }
 
@@ -115,7 +114,10 @@ class GameMasterSection extends React.Component {
     render () {
         return (
             <div id="game_master" className="col-100">
-                <h1 id="banner">{this.props.question}</h1>
+                <h1 id="banner">Marking Answers</h1>
+
+                <h2>Question: {this.props.question}</h2>
+                <h2>Answer: {this.props.answer}</h2>
 
                 {this.state.userQuestions.length === 0 && 
                     <div>
@@ -225,7 +227,8 @@ export default class Game extends React.Component{
             players: [],
             quizName: "",
             gameMaster: "",
-            currentQuestion: null,
+            currentQuestion: "",
+            currentAnswer: "",
             currentState: STATES.GAME_LOBBY
         };
     }
@@ -254,6 +257,13 @@ export default class Game extends React.Component{
     socketEvents = () => {
         socket.on("usersUpdated", (players) => {
             this.setState({players});
+
+            let isGameMasterAndPlaying = this.state.gameMaster === this.props.username 
+                                                    && this.state.currentState === STATES.GAME_MASTER;
+                                                    
+            if (isGameMasterAndPlaying && players.length === 1) {
+                this.props.showError ("All the players have disconnected you are on your own");
+            }
         });
 
         socket.on("joinedGame", ({quizName, gameID, gameMaster}) => {
@@ -261,11 +271,17 @@ export default class Game extends React.Component{
         });
 
         socket.on("nextQuestion", (question) => {
+            let isGameMaster = this.state.gameMaster === this.props.username;
 
-            let stateToShow = (this.state.gameMaster === this.props.username) ? STATES.GAME_MASTER : STATES.QUESTION_SECTION;
+            let stateToShow = (isGameMaster) ? STATES.GAME_MASTER : STATES.QUESTION_SECTION;
 
             this.setState({currentState: stateToShow});
-            this.setState({currentQuestion: question});
+
+            this.setState({currentQuestion: question.question});
+
+            if (isGameMaster) {
+                this.setState({currentAnswer: question.answer});
+            }
         });
 
         socket.on("gameEnded", () => {
@@ -275,6 +291,13 @@ export default class Game extends React.Component{
         socket.on("quizMasterDisconnect", () => {
             socket.close();
             this.props.showError("Lobby Leader Disconnected");
+        });
+
+        socket.on("userDisconnected", (user) => {
+            if (this.state.currentState === STATES.QUESTION_SECTION || this.state.currentState === STATES.GAME_MASTER 
+                                                                        || this.state.currentState === STATES.WAIT_STATE) {
+                alert (`${user} disconnected!`);
+            }
         });
 
         socket.on("usernameTaken", (username) => {
@@ -323,6 +346,7 @@ export default class Game extends React.Component{
             case STATES.GAME_MASTER:
                 component = <GameMasterSection 
                     question={this.state.currentQuestion}
+                    answer={this.state.currentAnswer}
                     players={this.state.players}
                 />;
                 break;

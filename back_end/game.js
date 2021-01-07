@@ -63,6 +63,7 @@ function onDisconnectParticipant (socket, io, username, gameID) {
         if (game) {
             game.removePlayer(username);
             io.to(game.gameID).emit("usersUpdated", game.getPlayers());
+            io.to(game.gameID).emit("userDisconnected", username);
         } 
     }); 
 }
@@ -204,7 +205,10 @@ function sendNextQuestion(socket, gameID){
     let game = games[gameID];
 
     if (game.currentQuizIndex < game.quiz.questions.length) {
-        io.to(gameID).emit("nextQuestion", game.quiz.questions[game.currentQuizIndex++].question);
+        // Send just the question to everyone apart from the marker
+        socket.to(gameID).emit("nextQuestion", {question: game.quiz.questions[game.currentQuizIndex].question});
+        // Send botht the question and the answer to the marker.
+        socket.emit("nextQuestion", game.quiz.questions[game.currentQuizIndex++]);
         return;
     }
     io.to(gameID).emit("gameEnded");

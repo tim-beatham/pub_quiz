@@ -1,0 +1,11 @@
+#error_component {
+    background-color: red;
+    text-align: center;
+    font-size: 4rem;
+    color: white;
+    height: 100%;
+}
+
+#error_component h2{
+    margin: 0 auto;
+}

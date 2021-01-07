@@ -9,7 +9,7 @@ import CreateGame from "./components/create_game";
 import CreateQuiz from "./components/create_quiz";
 import Game from "./components/game";
 import JoinGame from "./components/join_game";
-import ErrorComponent from "./components/error_component";
+import ErrorComponent from "./components/error";
 
 
 /**

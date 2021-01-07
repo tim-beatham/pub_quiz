@@ -16,7 +16,7 @@ function TitleComponent(props) {
     return (
         <div>
             <p className="formLabel">Title:</p>
-            <input type="text" value={props.title} onChange={(event) => props.setTitle(event.target.value.trim())}/>
+            <input type="text" value={props.title} onChange={(event) => props.setTitle(event.target.value)}/>
         </div>
     );
 }   
@@ -32,13 +32,13 @@ class QuestionAnswer extends React.Component {
     }
 
     modifyQuestion = (event) => {
-        this.props.modifyQuestion(event.target.value.trim(), this.state.answer);
-        this.setState({question: event.target.value.trim()});
+        this.props.modifyQuestion(event.target.value, this.state.answer);
+        this.setState({question: event.target.value});
     }
 
     modifyAnswer = (event) => {
-        this.props.modifyQuestion(this.state.question, event.target.value.trim());
-        this.setState({answer: event.target.value.trim()});
+        this.props.modifyQuestion(this.state.question, event.target.value);
+        this.setState({answer: event.target.value});
     }
 
     render() {
@@ -195,7 +195,7 @@ class EditQuiz extends React.Component {
     }
 
     titleValid = () => {
-        return this.props.title !== "";
+        return this.props.title.trim() !== "";
     }
 
     questionsValid = () => {
@@ -203,7 +203,7 @@ class EditQuiz extends React.Component {
 
         questions.forEach (question => {
             console.log(question);
-            if (question.question === "" || question.answer === "") {
+            if (question.question.trim() === "" || question.answer.trim() === "") {
                 return false;
             }
         });
