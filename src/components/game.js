@@ -165,7 +165,7 @@ class EndState extends React.Component {
             let players = [];
             
             leaderboard.forEach((player, index) => {
-                players.push(<h1>{`${index + 1}) ${player}`}</h1>);
+                players.push(<tr><td>{index + 1}</td><td>{player.username}</td><td>{player.score}</td></tr>);
             });
             
             // Set the state of the component.
@@ -176,9 +176,13 @@ class EndState extends React.Component {
 
     render () {
         return (
-            <div className="component">
+            <div id="end_state" className="col-100">
                 <h1 id="banner">Leaderboard</h1>
-                {this.state.leaderboard}
+                <table id="leaderboard">
+                    <thead><tr><td>Rank</td><td>Username</td><td>Score</td></tr></thead>
+                    {this.state.leaderboard}
+                </table>
+               
             </div>
         );
     }

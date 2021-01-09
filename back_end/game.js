@@ -6,12 +6,14 @@ let games = {};
 // The servers socket.
 let io = null;
 
+let logger = null;
+
 /**
  * Create an instance of the server's
  * WebSocket.
  * @param {*} http      the instance of the http socket. 
  */
-function createIO(http) {
+function createIO(http, logIn) {
 
     io = require("socket.io")(http, {
         cors: {
@@ -19,13 +21,12 @@ function createIO(http) {
         }
     });
 
-    io.on("connection", (socket) => {
-        console.log("a user connected");
+    logger = logIn;
 
+    io.on("connection", (socket) => {
         onCreateGame(io, socket);
         onJoinGame(io, socket);
         onGetGame(io, socket);
-        
     });
 }
 
@@ -39,6 +40,8 @@ function createIO(http) {
  */
 function onDisconnectLobbyLeader(socket, io, username, gameID) {
     socket.on("disconnect", () => {
+        logger.writeInfoLog(`User: ${username} Game: ${gameID} disconnected`);
+
         let game = games[gameID];
         if (game !== undefined) {
             game.removePlayer(username);
@@ -59,6 +62,8 @@ function onDisconnectLobbyLeader(socket, io, username, gameID) {
  */
 function onDisconnectParticipant (socket, io, username, gameID) {
     socket.on("disconnect", () => {
+        logger.writeInfoLog(`User: ${username} Game: ${gameID} disconnected`);
+
         let game = games[gameID];
         if (game) {
             game.removePlayer(username);
@@ -97,6 +102,8 @@ function onJoinGame(io, socket) {
             onDisconnectParticipant(socket, io, username, gameID);
             onAnswerQuestion(socket, username, gameID);
             onLeaderboard(socket, gameID);
+
+            logger.writeInfoLog(`User: ${username} Joined: ${gameID}`);
         }
     });
 }
@@ -111,6 +118,7 @@ function onJoinGame(io, socket) {
  */
 function onMarkQuestions(socket, gameID) {
     socket.on("userAnswers", (answersObj) => {
+        logger.writeInfoLog(`Questions marked: ${JSON.stringify(answersObj)}`);
 
         let game = games[gameID];
 
@@ -133,6 +141,7 @@ function onMarkQuestions(socket, gameID) {
  */
 function onGetGame(io, socket) {
     socket.on("getGames", () => {
+        logger.writeInfoLog("Get Games Request");
 
         let gameTable = [];
 
@@ -154,6 +163,8 @@ function onGetGame(io, socket) {
 function onCreateGame(io, socket) {
     
     socket.on("createLobby", ({username, quiz}) => {
+        logger.writeInfoLog(`CREATE LOBBY: ${username} QUIZ NAME: ${quiz.quiz_name}`);
+
         let game = new Game(quiz);
         games[game.gameID] = game;
 
@@ -188,6 +199,8 @@ function onCreateGame(io, socket) {
  */
 function onStartGame(socket, gameID) {
     socket.on("startGame", () => {
+        logger.writeInfoLog(`Game: ${gameID} started`);
+
         games[gameID].started = true;
         sendNextQuestion(socket, gameID);
     });
@@ -218,16 +231,15 @@ function sendNextQuestion(socket, gameID){
 function onLeaderboard(socket, gameID) {
 
     socket.on("getLeaderboard", () => {
+        logger.writeInfoLog(`Get Leaderboard for ${gameID}`);
+
         let game = games[gameID];
 
         let players = Object.values(game.players);
 
         players.sort((p1, p2) => p2.score - p1.score);
-        players = players.map(player => player.player);
-
-
-        let index = players.indexOf(game.gameMaster.player);
-        players.splice(index, 1);
+        players = players.filter(player => player.player !== game.gameMaster.player)
+                    .map(player => {return {username: player.player, score: player.score}});
 
         socket.emit("leaderboard", players);
     });
@@ -242,6 +254,8 @@ function onLeaderboard(socket, gameID) {
  */
 function onAnswerQuestion(socket, username, gameID) {
     socket.on("submitAnswer", (answer) => {
+        logger.writeInfoLog(`User: ${username} Submitted answer: ${answer} For: ${gameID}`);
+
         let game = games[gameID];
 
         let gamemasterSocket = game.getGameMasterSocket();

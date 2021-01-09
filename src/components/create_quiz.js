@@ -236,19 +236,24 @@ class EditQuiz extends React.Component {
         return (
             <div id="edit_quiz" className="col-100">
                 <h1 id="banner">Create Quiz</h1>
-                <TitleComponent title={this.props.title} setTitle={this.props.setTitle}/>
 
-                {!this.state.titleValid && <h2>Please Enter A Value For The Title!</h2>}
+                <div id="question_section" className="col-75">
+                    <TitleComponent title={this.props.title} setTitle={this.props.setTitle}/>
 
-                <div id="questions">
-                    {this.state.questionComponents}
+                    {!this.state.titleValid && <h2>Please Enter A Value For The Title!</h2>}
+
+                    <div id="questions">
+                        {this.state.questionComponents}
+                    </div>
+                    <EditWidget
+                        addQuestion={this.addQuestionComponent}
+                        showPreview={this.showPreview}
+                    />
+
+                    {!this.state.questionsValid && <h2>Please add a question or fill in your questions!</h2>}
+
                 </div>
-                <EditWidget
-                    addQuestion={this.addQuestionComponent}
-                    showPreview={this.showPreview}
-                />
-
-                {!this.state.questionsValid && <h2>Please add a question or fill in your questions!</h2>}
+               
             </div>
         );
     }

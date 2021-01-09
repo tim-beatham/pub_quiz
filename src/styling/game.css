@@ -79,4 +79,21 @@
     margin: auto;
 }
 
+#leaderboard {
+    width: 75%;
+    color: white;
+    font-size: 2rem;
+    margin: auto;
+}
+
+#leaderboard > thead > tr {
+    background-color: #00796b;
+    height: 5rem;
+}
+
+#leaderboard > tr {
+    height: 5rem;
+    text-align: center;
+    background-color: #202020;
+}
 

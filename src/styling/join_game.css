@@ -3,21 +3,20 @@
 #join_table {
     width: 100%;
     color: white;
-    height: 6rem;
 }
 
 #join_table > thead tr{
-    background-color: teal;
+    background-color: #00796b;
     height: 5rem;
 }
 
-#join_table tr {
+#join_table > tbody > tr {
     height: 5rem;
     text-align: center;
     background-color: #202020;
 }
 
-#join_table tr:hover {
+#join_table > tbody tr:hover {
     background-color: red;
 }
 

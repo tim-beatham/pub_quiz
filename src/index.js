@@ -46,6 +46,10 @@ class App extends React.Component {
         }
     }
 
+    componentDidMount () {
+        
+    }
+
     render() {
         let component = null;
 

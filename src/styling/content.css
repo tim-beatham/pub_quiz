@@ -13,6 +13,15 @@ label {
     font-size: 2rem;    
 }
 
+html, body, #root {
+    margin: 0;
+    padding: 0;
+    background-color: #121212;
+    height:100%;
+    color: white;
+}
+
+
 input[type="text"] {
     width: 100%;
     padding: 0.5rem 2rem;

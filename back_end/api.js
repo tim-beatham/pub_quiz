@@ -3,12 +3,16 @@ const app = express();
 const http = require("http").createServer(app);
 const {createIO} = require("./game");
 
+const {Logger} = require("./logger");
+
 
 const bodyParser = require("body-parser");
 
 const {postQuiz, fetchQuizzes, fetchQuiz} = require("./db_queries");
 
 const cors = require("cors");
+
+const logger = new Logger("logs");
 
 app.use(bodyParser.json());
 
@@ -23,10 +27,15 @@ const expectedQuestion = {
     "answer": "some answer"
 }
 
+// We are delivering the content using a different server.
+// We need to use cors.
 app.use(cors());
+
 
 app.post("/api/quiz", function (req, res) {
     const postRequest = req.body;
+
+    logger.writeInfoLog("POST /api/quiz", JSON.stringify(postRequest));
 
     // Check the attributes of the request.
     if (checkObjects(responseExpected, postRequest)) {
@@ -48,6 +57,8 @@ app.post("/api/quiz", function (req, res) {
 
 
 app.get("/api/quizzes", function (req, res) {
+    logger.writeInfoLog("GET /api/quizzes");
+
     fetchQuizzes()
         .then(result => {
             res.status(200).json(result);
@@ -59,7 +70,7 @@ app.get("/api/quizzes", function (req, res) {
 app.get("/api/quiz", function (req, res) {
     let request = req.query;
 
-    console.log(request.id);
+    logger.writeInfoLog("GET /api/quiz");
 
     fetchQuiz(request.id)
         .then(result => {
@@ -69,11 +80,12 @@ app.get("/api/quiz", function (req, res) {
         });
 });
 
-createIO(http);
+createIO(http, logger);
 
 const PORT = 5000;
-http.listen(5000, () => {
-    console.log(`Listening on port ${PORT}`);
+
+http.listen(PORT, () => {
+    logger.writeInfoLog(`Server listening on port ${5000}`);
 });
 
 function checkObjects(obj1, obj2) {

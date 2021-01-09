@@ -10,9 +10,8 @@
     font-size: 1.5rem;
 }
 
-#edit_quiz > div {
-    width: 100%;
-    margin: 1rem auto;
+#question_section {
+    margin: auto;
 }
 
 #add_widget {
@@ -21,7 +20,7 @@
 
 #add_widget > input[type="button"] {
     height: 8rem;
-    width: 100%;
+    width: 75%;
     text-align: center;
     background-color: #00796b;
     color: white;
@@ -44,7 +43,7 @@
 
 #preview_widget > input[type="button"] {
     height: 5rem;
-    width: 100%;
+    width: 75%;
     text-align: center;
     background-color: #00796b;
     color: white;
