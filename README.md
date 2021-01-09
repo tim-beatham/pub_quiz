@@ -25,7 +25,7 @@ a pub quiz as it gives the answer aways.
 
 ## The Game Lobby
 
-![The Game Lobby](./screenshots/lobby.png)
+![The Game Lobby](./screenshots/game_lobby.png)
 
 ## Answering A Question
 
