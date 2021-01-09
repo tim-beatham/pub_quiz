@@ -27,8 +27,8 @@ Before creating or joining a game they are required to enter an appropriate user
 When creating a quiz the user is asked to enter a series of questions and answers. They have to
 provide at least one question and answer and they have to provide a title of the quiz.
 
-From here they can then preview the quiz and consequently make a POST request to back end API. The
-back end then stores the quiz in a MongoDB database.
+From here they can then preview the quiz and consequently make a POST request to the back-end API. The
+back-end then stores the quiz in a MongoDB database.
 
 ## Creating A Game
 
