@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 
 import "../styling/create_quiz.css";
 
@@ -27,18 +27,30 @@ class QuestionAnswer extends React.Component {
 
         this.state = {
             question: this.props.question().question,
-            answer: this.props.question().answer
+            answer: this.props.question().answer,
+            youtubeLink: this.props.question().youtubeLink,
+            imageLink: this.props.question().imageLink
         }
     }
 
     modifyQuestion = (event) => {
-        this.props.modifyQuestion(event.target.value, this.state.answer);
+        this.props.modifyQuestion(event.target.value, this.state.answer, this.state.youtubeLink, this.state.imageLink);
         this.setState({question: event.target.value});
     }
 
     modifyAnswer = (event) => {
-        this.props.modifyQuestion(this.state.question, event.target.value);
+        this.props.modifyQuestion(this.state.question, event.target.value, this.state.youtubeLink, this.state.imageLink);
         this.setState({answer: event.target.value});
+    }
+
+    modifyYoutubeLink = (event) => {
+        this.props.modifyQuestion(this.state.question, this.state.answer, event.target.value, this.state.imageLink);
+        this.setState({youtubeLink: event.target.value});
+    }
+
+    modifyImageURL = (event) => {
+        this.props.modifyQuestion(this.state.question, this.state.answer, this.state.youtubeLink, event.target.value);
+        this.setState({imageLink: event.target.value});
     }
 
     render() {
@@ -48,16 +60,22 @@ class QuestionAnswer extends React.Component {
                 <input type="text" value={this.state.question} onChange={this.modifyQuestion}/>
                 <p className="form_label">Answer: </p>
                 <input type="text" value={this.state.answer} onChange={this.modifyAnswer}/>
+                <p className="for_label">Youtube URL: </p>
+                <input type="text" value={this.state.youtubeLink} onChange={this.modifyYoutubeLink} />
+                <p className="for_label">Image URL: </p>
+                <input type="text" value={this.state.imageLink} onChange={this.modifyImageURL} />
             </div>
         )
     }
 }
+
 
 function EditWidget(props) {
     return (
         <div id="add_widget">
             <input type="button" onClick={props.addQuestion} value="Add Question"/>
             <input type="button" onClick={props.showPreview} value="Show Preview"/>
+            
         </div>
     );
 }
@@ -107,9 +125,9 @@ export default class CreateQuiz extends React.Component {
      * @param {*} question      the question to ask
      * @param {*} answer        the answer of the question
      */
-    modifyQuestion = (index, question, answer) => {
+    modifyQuestion = (index, question, answer, youtubeLink=null, imageLink=null) => {
         this.setState({questions: [...this.state.questions.slice(0, index), 
-            {question, answer}, ...this.state.questions.slice(index + 1)]});
+            {question, answer, youtubeLink, imageLink}, ...this.state.questions.slice(index + 1)]});
     }
 
     /**
@@ -188,7 +206,7 @@ class EditQuiz extends React.Component {
             {questionComponents: [...this.state.questionComponents,
                     <QuestionAnswer
                         key={numQuestion}
-                        modifyQuestion={(question, answer) => this.props.modifyQuestion(numQuestion, question, answer)}
+                        modifyQuestion={(question, answer, youtubeLink=null, imageLink=null) => this.props.modifyQuestion(numQuestion, question, answer, youtubeLink, imageLink)}
                         question={() => this.props.getQuestions()[numQuestion]}
                     />]
             });
@@ -260,10 +278,40 @@ class EditQuiz extends React.Component {
 }
 
 function PreviewQuestionWidget(props) {
+
+    const YOUTUBE_REGEX = /https:\/\/www\.youtube\.com\/watch\?v=(?<youtubeID>.{11}).*/;
+
+    // Generate the image
+    function generateImage() {
+
+        if (props.question.imageLink) {
+            return <img src={props.question.imageLink} alt="user defined media" />
+        }
+    }
+
+    function generateYouTube() {
+        // eslint-disable-next-line jsx-a11y/iframe-has-title
+
+        if (props.question.youtubeLink) {
+            let regexYoutube = YOUTUBE_REGEX.exec(props.question.youtubeLink);
+
+            return <iframe width="560" 
+                    height="315" 
+                    src={`https://www.youtube.com/embed/${regexYoutube.groups.youtubeID}`} 
+                    frameborder="0" allow="accelerometer; autoplay; 
+                    clipboard-write; encrypted-media; gyroscope;
+                     picture-in-picture" allowfullscreen>
+                </iframe>
+        }
+    }
+
+
     return (
         <div id="preview_question">
-            <h1>{props.question}</h1>
-            <p id="preview_answer">{props.answer}</p>
+            <h1>{props.question.question}</h1>
+            <p id="preview_answer">{props.question.answer}</p>
+            {generateImage()}
+            {generateYouTube()}
         </div>
     );
 }
@@ -287,9 +335,8 @@ class Preview extends React.Component {
     }
 
     getQuestion = () => {
-        return this.state.questions[this.state.index].question;
+        return this.state.questions[this.state.index];
     }
-    getAnswer = () => this.state.questions[this.state.index].answer;
     hasNext = () => this.state.index < this.state.questions.length - 1;
 
     nextQuestion = () => {
@@ -314,7 +361,6 @@ class Preview extends React.Component {
                 
                 <PreviewQuestionWidget
                     question={this.getQuestion()}
-                    answer={this.getAnswer()}
                     hasNext={this.hasNext}
                     nextQuestion={this.nextQuestion}
                     showMainMenu={this.submit}

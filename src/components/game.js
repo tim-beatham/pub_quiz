@@ -41,12 +41,38 @@ class QuestionSection extends React.Component {
         }
     }
 
+    generateYouTubeVideo = () => {
+        const YOUTUBE_REGEX = /https:\/\/www\.youtube\.com\/watch\?v=(?<youtubeID>.{11}).*/;
+
+        if (this.props.youtubeLink) {
+            let regexYoutube = YOUTUBE_REGEX.exec(this.props.youtubeLink);
+
+            return <iframe width="560" 
+                    height="315" 
+                    src={`https://www.youtube.com/embed/${regexYoutube.groups.youtubeID}`} 
+                    frameborder="0" allow="accelerometer; autoplay; 
+                    clipboard-write; encrypted-media; gyroscope;
+                     picture-in-picture" allowfullscreen>
+                </iframe>
+        }
+    }
+
+    generateImage = () => {
+        if (this.props.imageLink) {
+            return <img src={this.props.imageLink} alt="user defined media" />
+        }
+    }
+
     render () {
         return (
             <div id="question_component" className="col-100">
                 <h1 id="banner">
                     {this.props.question}
                 </h1>
+                <div>
+                    {this.generateImage()}
+                    {this.generateYouTubeVideo()}
+                </div>
                 <div>
                     <label>Enter the answer:</label>
                     <input type="text" onChange={(e) => this.setState({answer: e.target.value})} />
@@ -283,6 +309,9 @@ export default class Game extends React.Component{
 
             this.setState({currentQuestion: question.question});
 
+            this.setState({youtubeLink: question.youtubeLink});
+            this.setState({imageLink: question.imageLink})
+
             if (isGameMaster) {
                 this.setState({currentAnswer: question.answer});
             }
@@ -339,6 +368,8 @@ export default class Game extends React.Component{
                 component = <QuestionSection
                     question={this.state.currentQuestion}
                     submitAnswer={this.submitAnswer}
+                    youtubeLink={this.state.youtubeLink}
+                    imageLink={this.state.imageLink}
                 />
                 break;
             case STATES.WAIT_STATE:

@@ -24,7 +24,9 @@ const responseExpected = {
 
 const expectedQuestion = {
     "question": "some question",
-    "answer": "some answer"
+    "answer": "some answer",
+    "imageLink": "a link",
+    "youtubeLink": "another"
 }
 
 // We are delivering the content using a different server.
@@ -95,13 +97,9 @@ function checkObjects(obj1, obj2) {
     if (attributeNames1.length !== attributeNames2.length)
         return false;
 
-    for (let i = 0; i < attributeNames1.length; i++) {
-        let attributeName1 = attributeNames1[i];
-        let attributeName2 = attributeNames2[i];
-
-        if (attributeName1 !== attributeName2 || typeof obj1[attributeName1] !== typeof obj2[attributeName2]) {
+    for (let attributeName of attributeNames1) {
+        if (!obj2.hasOwnProperty(attributeName))
             return false;
-        }
     }
 
     return true;

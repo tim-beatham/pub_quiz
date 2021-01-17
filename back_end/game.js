@@ -219,9 +219,11 @@ function sendNextQuestion(socket, gameID){
 
     if (game.currentQuizIndex < game.quiz.questions.length) {
         // Send just the question to everyone apart from the marker
-        socket.to(gameID).emit("nextQuestion", {question: game.quiz.questions[game.currentQuizIndex].question});
+        let question = game.quiz.questions[game.currentQuizIndex++];
+
+        socket.to(gameID).emit("nextQuestion", {question: question.question, youtubeLink: question.youtubeLink, imageLink: question.imageLink});
         // Send botht the question and the answer to the marker.
-        socket.emit("nextQuestion", game.quiz.questions[game.currentQuizIndex++]);
+        socket.emit("nextQuestion", question);
         return;
     }
     io.to(gameID).emit("gameEnded");
